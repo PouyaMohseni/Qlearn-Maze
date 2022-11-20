@@ -1,5 +1,3 @@
-from qlearn import qlearn
-
 class maze():
     agent: list #Agent's position [0,0]
     flags = [] #Flags' positions [[0,1],...]
@@ -8,21 +6,23 @@ class maze():
     obstacles = [] #obsticales' positions [[2,1],...]
     flag_num: int #number of flags
     env: list #maze [[W,B,W,W],[W,F,T,O],...]
+    env_agent: list #The env with agent and its path
     env_0: int #maze y size
     env_1: int #maze x size
     env_size: int #maze's size
     env_lose: int #lose points
     visited: list #visited points is set 1
     
-    def __init__(self, env, agent):
+    def __init__(self, env, agent, target):
         self.env = env
         self.agent = agent
-
-        for i in self.env:
-            for j in self.env[0]:
-                if self.env[i][j]=="B": blocks.append([i,j])
-                elif self.env[i][j]=="O": obstacles.append([i,j])
-                elif self.env[i][j]=="F": flags.append([i,j])
+        self.target = target
+        
+        for i in range(len(self.env)):
+            for j in range(len(self.env[0])):
+                if self.env[i][j]=="B": self.blocks.append([i,j])
+                elif self.env[i][j]=="O": self.obstacles.append([i,j])
+                elif self.env[i][j]=="F": self.flags.append([i,j])
                 
         self.flag_num = len(self.flags)
         
@@ -31,9 +31,24 @@ class maze():
         self.env_size = self.env_0*self.env_1
 
         self.visited = [[0 for _ in range(self.env_1)] for _ in range(self.env_0)]
-
         self.env_lose = -1*self.env_size
       
+    def show_env(self):
+        plt.grid('on')
+        self.set_env_agent()
+        plt.imshow([[{"W":0,"A":1,"V":2,"B":3,"F":4,"O":5,"T":6}.get(i) for i in item]  for item in self.env_agent])
+        plt.show()
+    
+    def set_env_agent(self):
+        self.env_agent = self.env
+        
+        self.env_agent[self.agent[0]][self.agent[1]]= "A"
+        self.env_agent[self.target[0]][self.target[1]]= "T"
+        
+        for i in range(len(self.visited)):
+            for j in range(len(self.visited[0])):
+                if self.visited[i][j]==1: self.env_agent[i][j] = "V"
+        
     def reward(self,action):
         """
         actions: [L: left,
