@@ -1,3 +1,6 @@
+import matplotlib.pyplot as plt
+from matplotlib.colors import ListedColormap
+
 class maze():
     agent: list #Agent's position [0,0]
     flags = [] #Flags' positions [[0,1],...]
@@ -36,7 +39,10 @@ class maze():
     def show_env(self):
         plt.grid('on')
         self.set_env_agent()
-        plt.imshow([[{"W":0,"A":1,"V":2,"B":3,"F":4,"O":5,"T":6}.get(i) for i in item]  for item in self.env_agent])
+        cmap = ListedColormap(["white", "yellow","red","black","gray"])
+        #cmap.set_bad("silver")
+        plt.imshow([[{"W":0,"A":1,"T":2,"B":3,"V":4,"F":4,"O":5}.get(i) for i in item]  for item in self.env_agent],cmap=cmap)
+
         plt.show()
     
     def set_env_agent(self):
@@ -49,6 +55,23 @@ class maze():
             for j in range(len(self.visited[0])):
                 if self.visited[i][j]==1: self.env_agent[i][j] = "V"
         
+    
+    def train(self,epochs,landa,alpha):
+        self.set_table(landa,alpha)
+        
+        for epoch in range(epochs):
+            self.train_epoch()
+    
+    def train_epoch(self):
+        if '''??'''True==True: self.take_a_step() 
+        else: self.eliminate_epoch()
+        
+    def take_a_step(self):
+        pass
+    
+    def eliminate_game(self):
+        pass
+    
     def reward(self,action):
         """
         actions: [L: left,
@@ -96,3 +119,5 @@ class maze():
         
     def set_table(self,landa,alpha):
         self.qtable = qlearn(self.env_0,self.env_1,landa,alpha)
+
+    
