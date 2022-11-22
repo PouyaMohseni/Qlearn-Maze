@@ -1,6 +1,43 @@
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 
+class copy_maze():
+    def __init__(self):
+        pass
+    def copy(self,maze):
+        self.agent = maze.agent
+        self.flags = maze.flags
+        self.target = maze.target
+        self.blocks = maze.blocks 
+        self.obstacles = maze. obstacles
+        self.flag_num = maze.flag_num 
+        self.env = maze.env
+        #self.env_agent = maze.env_agent 
+        self.env_0 = maze.env_0
+        self.env_1 = maze.env_1 
+        self.env_size = maze.env_size 
+        self.env_lose = maze.env_lose
+        self.visited = maze.visited
+        self.lose = maze.lose
+        self.win = maze.win
+        
+    def paste(self, maze):
+        maze.agent = self.agent
+        maze.flags = self.flags
+        maze.target = self.target
+        maze.blocks = self.blocks 
+        maze.obstacles = self. obstacles
+        maze.flag_num = self.flag_num 
+        maze.env = self.env
+        #maze.env_agent = self.env_agent 
+        maze.env_0 = self.env_0
+        maze.env_1 = self.env_1 
+        maze.env_size = self.env_size 
+        maze.env_lose = self.env_lose
+        maze.visited = self.visited
+        maze.lose = self.lose
+        maze.win = self.win
+        
 class maze():
     agent: list #Agent's position [0,0]
     flags = [] #Flags' positions [[0,1],...]
@@ -15,6 +52,10 @@ class maze():
     env_size: int #maze's size
     env_lose: int #lose points
     visited: list #visited points is set 1
+    copy: copy_maze #maze attributes copy
+    
+    #lose_game = 0 #If it has lose the game
+    #win_game = 0 #If it has win the game
     
     def __init__(self, env, agent, target):
         self.env = env
@@ -36,6 +77,14 @@ class maze():
         self.visited = [[0 for _ in range(self.env_1)] for _ in range(self.env_0)]
         self.env_lose = -1*self.env_size
       
+        #Copy the maze
+        self.copy = copy_maze()
+        self.copy.copy(self)
+        
+    def reload(self):
+        #Reload the maze
+        self.copy.paste(self)
+    
     def show_env(self):
         plt.grid('on')
         self.set_env_agent()
@@ -60,17 +109,50 @@ class maze():
         self.set_table(landa,alpha)
         
         for epoch in range(epochs):
+            
             self.train_epoch()
     
     def train_epoch(self):
-        if '''??'''True==True: self.take_a_step() 
-        else: self.eliminate_epoch()
+        while not (self.win() or self.lose()):
+            self.take_a_step()
+            
+        self.eliminate_game()
         
     def take_a_step(self):
-        pass
-    
+        action_set = {"L":0,"U":0,"R":0,"D":0}
+
+        if self.agent[0] == 0: action_set.pop("U", None)
+        if self.agent[0] == self.env_0-1: action_set.pop("D", None)
+        if self.agent[1] == 0: action_set.pop("L", None)
+        if self.agent[1] == self.env_1-1: action_set.pop("R",None)
+
+
+        #policy and action
+        for action in action_set:
+            #print(action)
+            action_reward = (1 - self.qtable.alpha) * self.qtable.get_q(self.agent[0],self.agent[1],action) +  self.qtable.alpha *  (self.reward(action) + self.qtable.alpha * self.q_max(self.find_position(action)))
+            #print(action_reward)
+            self.qtable.set_q(self.agent[0],self.agent[1],action,action_reward)
+            action_set.update({action:action_reward})
+        
+        print(action_set)
+        
+        #Move agent
+        self.visited[self.agent[0]][self.agent[1]] += 1
+        action = max(action_set, key=action_set.get)
+        print(">->",action)
+        self.agent = self.find_position(action)
+        
     def eliminate_game(self):
-        pass
+        return self.reload()
+    
+    def win(self):
+        if len(self.flags)==0 and self.agent==self.target:
+            return 1
+        return 0
+    
+    def lose(self):
+        return 0
     
     def reward(self,action):
         """
@@ -82,21 +164,21 @@ class maze():
 
         new_agent = self.find_position(action)
             
-        if self.env[new_agent[0],new_agent[1]]=="B":
+        if self.env[new_agent[0]][new_agent[1]]=="B":
             return self.env_lose*2
-        elif self.env[new_agent[0],new_agent[1]]=="O":
+        elif self.env[new_agent[0]][new_agent[1]]=="O":
             return 0
-        elif self.env[new_agent[0],new_agent[1]]=="F":
+        elif self.env[new_agent[0]][new_agent[1]]=="F":
             return 0.1*(self.env_size/self.flag_num)
-        elif self.env[new_agent[0],new_agent[1]]=="T":
+        elif self.env[new_agent[0]][new_agent[1]]=="T":
             return self.env_size
-        elif self.visited[new_agent[0],new_agent[1]]>=2:
+        elif self.visited[new_agent[0]][new_agent[1]]>=2:
             return -4/self.env_size
-        elif self.visited[new_agent[0],new_agent[1]]>=2:
+        elif self.visited[new_agent[0]][new_agent[1]]>=1:
             return -1.1/self.env_size
         else:
             return -1.0/self.env_size
-
+    '''
     def take_an_action(self):
         action_set = ["L","U","R","D"]
 
@@ -109,15 +191,28 @@ class maze():
         #policy and action
 
         self.agent = self.find_position(action)
-
-    def find_position(self,action):
-        if   action=="L": return [self.agent[0],self.agent[1]-1]
-        elif action=="U": return [self.agent[0]+1,self.agent[1]]
-        elif action=="R": return [self.agent[0],self.agent[1]+1]
-        elif action=="D": return [self.agent[0]-1,self.agent[1]]
-
-        
+    '''
+                                                       
+    def q_max(self,new_agent):
+        all_q = []
+        for action in ["L","U","R","D"]:
+            all_q.append(self.qtable.get_q(self.find_position(action,new_agent)[0],self.find_position(action,new_agent)[1],action))
+            #print(action,new_agent,all_q[-1])
+        return max(all_q)
+                                                       
+    def find_position(self,action,agent=None):
+        if agent==None:
+            if   action=="L": return [self.agent[0],self.agent[1]-1]
+            elif action=="U": return [self.agent[0]-1,self.agent[1]]
+            elif action=="R": return [self.agent[0],self.agent[1]+1]
+            elif action=="D": return [self.agent[0]+1,self.agent[1]]
+        else:
+            if   action=="L": return [agent[0],agent[1]-1]
+            elif action=="U": return [agent[0]-1,agent[1]]
+            elif action=="R": return [agent[0],agent[1]+1]
+            elif action=="D": return [agent[0]+1,agent[1]]
+            
     def set_table(self,landa,alpha):
-        self.qtable = qlearn(self.env_0,self.env_1,landa,alpha)
+        self.qtable = qtable(self.env_0,self.env_1,landa,alpha)
 
     
