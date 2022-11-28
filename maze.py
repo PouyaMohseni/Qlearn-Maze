@@ -75,7 +75,7 @@ class maze():
         self.env_size = self.env_0*self.env_1
 
         self.visited = [[0 for _ in range(self.env_1)] for _ in range(self.env_0)]
-        self.env_lose = -1*self.env_size
+        self.env_lose = -1 #?*self.env_size
       
         #Copy the maze
         self.copy = copy_maze()
@@ -108,6 +108,7 @@ class maze():
     def train(self,epochs,landa,alpha):
         self.set_table(landa,alpha)
         
+        #epochs=2
         for epoch in range(epochs):
             
             self.train_epoch()
@@ -116,6 +117,7 @@ class maze():
         while not (self.win() or self.lose()):
             self.take_a_step()
             
+        print(250*"-")
         self.eliminate_game()
         
     def take_a_step(self):
@@ -152,6 +154,8 @@ class maze():
         return 0
     
     def lose(self):
+        if self.q_max(self.agent)<=self.env_lose:
+            return 1
         return 0
     
     def reward(self,action):
@@ -173,7 +177,7 @@ class maze():
         elif self.env[new_agent[0]][new_agent[1]]=="T":
             return self.env_size
         elif self.visited[new_agent[0]][new_agent[1]]>=2:
-            return -4/self.env_size
+            return (-2*self.visited[new_agent[0]][new_agent[1]])/self.env_size
         elif self.visited[new_agent[0]][new_agent[1]]>=1:
             return -1.1/self.env_size
         else:
