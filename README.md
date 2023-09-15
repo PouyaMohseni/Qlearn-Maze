@@ -1,45 +1,47 @@
 # Qlearn-Maze
-A Qlearn approach to solve maze problem with Reinforcement Learning
 
+## Overview
 
-# Reinforcement Learning:
+In this project we utilize Q-learning, a reinforcement learning technique, to solve maze problems.
 
-Reinforcement learning (RL) refers to a sub-field of Artificial Intelligence and also Machine Learning in which the machine – or the agent -- tries to learn a policy function that maximizes its rewards while taking action. In other words, the reward function that the agent tries to maximize is determined by the state of the agent and the action that it decides to take. Policy function, though, determines what action the agent should take based on its state and its previous knowledge of rewards. [1]
- 
-r(s, a)  r
-δ(s, a)  s’
+### Reinforcement Learning
 
-Reinforcement Learning is different from Supervised Learning in which the machine generalizes pre-labeled training data and Unsupervised Learning which typically works with unlabeled data. In the Reinforcement Learning problems, the agent finds the hidden structures of its environment by taking actions and being signaled by a reward. Therefore, RL is considered the third branch of machine learning. [1]
+Reinforcement learning (RL) is a sub-field of Artificial Intelligence and Machine Learning. In RL, an agent aims to learn a policy function that maximizes its rewards while taking actions. The reward function depends on the agent's state and the action it chooses. Policy function, on the other hand, determines the action based on the state and past knowledge of rewards.
 
-# Q-Learning:
-Many approaches have been taken to implement Reinforcement Learning in order to have an agent obtain a policy function that maximizes its reward in each pair of states and actions. One of which is Q-Learning. In this approach, the agent tries to learn from its environment by relaying on its previous experiences from the reward function. Having a learning rate as (alpha) and something else as (landa) the previous experiences are updated by taking new actions and precepting the reward function.
-Q(s, a)  Q(s, a) + α[r + γ max Q(s’, a’) – Q(s, a)]
-In other words, a table is generated for each state and action pair and then, each register is initialized with zero – for now just consider the reward function non-positive – and would be updated throughout the training phase of the algorithm’s implementation. 
+- **r(s, a) → r** (Reward)
+- **δ(s, a) → s'** (Transition)
 
-For more information on Reinforcement Learning or precise information about Q-Learning Algorithm follow the citations. 
-The problem: Maze
-The objective of the maze problem -- or rat in a maze – is to find a path for the rat to the cheese while the path is not blocked by any obstacle. In the RL version, we consider the rat as the agent, and then we define the reward function in a way that the agent gets able to determine the fastest path to the finishing point – or in this terminology, the target. Below is a 5*5 maze with the agent and the target locating at [0,0], and [4,4], respectively. 
+Reinforcement Learning differs from Supervised Learning, which uses pre-labeled data, and Unsupervised Learning, which typically works with unlabeled data. RL involves agents exploring their environment, taking actions, and receiving rewards, making it the third branch of machine learning.
 
-We, then, integrate the problem by defining flags that are supposed to be collected by the agent before arriving at the target. Therefore, an amendment to the previous reward function is necessary. The objective, though, reminds the same: approaching the target in the fastest way. Below is the introduced 5*5 maze with two flags locating at [1,1], and [2,3], respectively.
+### Q-Learning
 
-# States
-States are defined as the registers on the maze – including the obstacles, etc. We can consider that agent can take any action in the set, {left, up, right, down}, and then we would impose the agent high punishment if it is off-the-board to secure staying in the maze. Another approach, though, is to decrease the number of actions that the agent can take when it is adjacent to the edges – it is clear that obstacles cannot be considered edges. 
+Q-Learning is one approach to implement Reinforcement Learning. In Q-Learning, the agent learns from previous experiences based on the reward function. It uses a learning rate (alpha) and other parameters (lambda) to update its experiences by taking new actions and perceiving rewards. A table is created for each state-action pair, initialized with zero, and updated during training.
 
-# Reward Function:
-The Reward Function must satisfy two things: first, the agent is arriving at the target, and second, the agent takes the fastest path. Thus, we want to prevent our agent from wandering around back and forth between a couple of states. Therefore, we try to punish the agent when it is visiting a visited state. Though we do not want to restrict the agent from exploring so, re-visiting a state just one time would not matter.  The reward function is introduced below; note how the agent is punished according to the number of visits to a state.
-//
-Moreover, the agent should be rewarded when it completes the task. Therefore, a huge amount of reward is allocated when the target is approached.
-//
-In addition, the game is eliminated when the agent approaches the target or when the agent cannot estimate a valuable future reward – more than -1.  
-//
-In the following the simple introduced 5*5 maze is solved by the algorithm and the reward function.
-//
+**Q(s, a) ← Q(s, a) + α[r + γ max Q(s', a') – Q(s, a)]**
 
-# Adding Flags
-We change the reward function in order to integrate flags into the game. Firstly, winning the game is changed: now the agent must approach the target while all flags are achieved. Secondly, when the agent enters the state where its flag is not achieved, the reward function allocates more rewards to the agent. In this way, the agent is forced to obtain flags on its way to the target state.
-//
-Then, the agent is trained in the previously introduced maze as follows: 
-//
+For more information on Reinforcement Learning or precise details about the Q-Learning algorithm, refer to the citations.
 
-# What’s next?
-Movable obstacles are introduced which are moved by the agent when they move toward them. These objects are two sides of a sword; they can be used to open a path or block it fully. Thus, the reward function should be determined precisely.   
+## The Maze Problem
+
+The maze problem, or "rat in a maze," involves finding a path from a starting point to a target while avoiding obstacles. In the RL version, the rat represents the agent, and the reward function is designed to guide the agent to find the fastest path to the target. Below is a 5x5 maze with the agent at [0,0] and the target at [4,4].
+
+In this implementation, additional flags are introduced, which the agent must collect before reaching the target. The reward function is modified accordingly. The primary objective remains the same: reaching the target as quickly as possible. Below is the updated 5x5 maze with two flags at [1,1] and [2,3].
+
+## States
+
+States are represented as cells within the maze, including obstacles. The agent can take actions such as left, up, right, and down. To ensure that the agent stays within the maze, it is penalized if it moves off the board. Alternatively, the number of actions the agent can take when near the edges can be limited.
+
+## Reward Function
+
+The reward function serves two purposes: ensuring the agent reaches the target and encouraging the fastest path. The agent is penalized for revisiting states to prevent it from wandering back and forth. However, the agent is still allowed to explore by revisiting a state once. The reward function is designed to punish excessive revisits.
+
+- When the agent completes the task, a substantial reward is given.
+- The game ends if the agent reaches the target or cannot estimate a valuable future reward (greater than -1).
+
+## Adding Flags
+
+To add complexity to the game, flags are introduced. Winning the game now requires the agent to reach the target while collecting all flags. When the agent enters a state where a flag is not collected, the reward function offers higher rewards, motivating the agent to gather flags while heading to the target.
+
+The agent is trained in the previously introduced maze with flags as part of the gameplay.
+
+---
