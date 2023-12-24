@@ -3,6 +3,8 @@
 ## Overview
 
 In this project we utilize Q-learning, a reinforcement learning technique, to solve maze problems.
+For the complete report, including detailed explanations and implimentation,please refer to [Part 1](https://pouyamohseni.medium.com/the-maze-reinforcement-learning-part-1-2bf53e56c94b)
+and [Part 2](https://pouyamohseni.medium.com/the-maze-reinforcement-learning-part-2-3f1fd8254e03).
 
 ### Reinforcement Learning
 
